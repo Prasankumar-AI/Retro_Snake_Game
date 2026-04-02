@@ -283,3 +283,45 @@ input:focus {
     border-bottom: 1px solid #333;
     font-size: 0.7rem;
 }
+
+/* FOOTER STYLES */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    background: rgba(13, 13, 13, 0.8);
+    backdrop-filter: blur(5px);
+    border-top: 1px solid rgba(57, 255, 20, 0.2);
+    z-index: 100;
+}
+
+.app-footer p {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--neon-green);
+    text-shadow: 0 0 5px var(--neon-green);
+}
+
+.social-links {
+    display: flex;
+    gap: 25px;
+}
+
+.social-links a {
+    color: var(--neon-green);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px var(--neon-green);
+}
+
+.social-links a:hover {
+    color: var(--neon-pink);
+    transform: translateY(-5px) scale(1.2);
+    text-shadow: 0 0 15px var(--neon-pink);
+}
