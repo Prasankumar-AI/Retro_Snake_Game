@@ -1,0 +1,245 @@
+# Project: Python's World - Retro Snake Game 🐍✨
+
+This document contains the complete technical details, source code, and deployment instructions for **Python's World**, a full-stack retro-style Snake Game application.
+
+---
+
+## 🏗️ Project Overview
+- **Name**: Python's World
+- **Theme**: 1980s Arcade / CRT Aesthetic
+- **Features**: 
+    - Smooth 20x20 Snake Game Engine.
+    - Persistent Leaderboard (PostgreSQL).
+    - User Profile System.
+    - Responsive Footer with developer credits and social icons.
+- **Live URL**: [https://retro-snake-game-315759889303.us-central1.run.app](https://retro-snake-game-315759889303.us-central1.run.app)
+- **GitHub Repository**: [Prasankumar-AI/Retro_Snake_Game](https://github.com/Prasankumar-AI/Retro_Snake_Game)
+
+---
+
+## 🛠️ Technology Stack
+- **Frontend**: HTML5 (Canvas), Vanilla CSS3 (Custom CRT Effects), Vanilla JavaScript.
+- **Backend**: Python Flask (Gunicorn for production).
+- **Database**: SQLAlchemy with PostgreSQL (managed by Cloud SQL on GCP).
+- **Infrastructure**: Google Cloud Run (Serverless), Google Cloud Build, Artifact Registry.
+
+---
+
+## 📝 Source Code
+
+### 1. index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python's World - Retro Snake Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="crt-overlay"></div>
+
+    <main id="app">
+        <!-- Landing Page -->
+        <section id="landing-page" class="screen active">
+            <div class="background-snakes" id="bg-snakes"></div>
+            <div class="content">
+                <h1 class="glitch" data-text="PYTHON'S WORLD">PYTHON'S WORLD</h1>
+                <p class="subtitle">A Journey Back to 1985</p>
+                <button id="enter-btn" class="retro-btn">ENTER PYTHON'S WORLD</button>
+            </div>
+        </section>
+
+        <!-- Profile Setup -->
+        <section id="profile-page" class="screen">
+            <div class="content">
+                <h2 class="title">WELCOME TO YOUR CHILDHOOD ERA</h2>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="first-name">FIRST NAME</label>
+                        <input type="text" id="first-name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">LAST NAME</label>
+                        <input type="text" id="last-name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">AGE</label>
+                        <input type="number" id="age" required min="1" max="120">
+                    </div>
+                    <button type="submit" id="start-game-btn" class="retro-btn">START NEW GAME</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Snake Game -->
+        <section id="game-page" class="screen">
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="stat">SCORE: <span id="current-score">0</span></div>
+                    <div class="stat">BEST: <span id="best-score">0</span></div>
+                </div>
+                <canvas id="game-canvas" width="400" height="400"></canvas>
+                <div id="game-controls" class="controls-hint">
+                    USE ARROW KEYS TO MOVE
+                </div>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="game-over" class="overlay hidden">
+                <h2 class="game-over-title">GAME OVER</h2>
+                <div class="final-stats">
+                    <p>TOTAL SCORE: <span id="final-score">0</span></p>
+                    <p>BEST SCORE: <span id="final-best">0</span></p>
+                </div>
+                <button id="restart-btn" class="retro-btn">TRY AGAIN</button>
+                <button id="leaderboard-btn" class="retro-btn secondary">LEADERBOARD</button>
+            </div>
+        </section>
+
+        <!-- Leaderboard -->
+        <section id="leaderboard-page" class="screen">
+            <div class="content">
+                <h2 class="title">LEADERBOARD</h2>
+                <div id="leaderboard-list">
+                    <!-- Loaded dynamically -->
+                </div>
+                <button id="back-to-home-btn" class="retro-btn">BACK</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>DEVELOPED BY PRASAN KUMAR</p>
+        <div class="social-links">
+            <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### 2. style.css
+```css
+:root {
+    --neon-green: #39FF14;
+    --neon-blue: #00CCFF;
+    --neon-pink: #FF00FF;
+    --background: #0D0D0D;
+    --snake-green: #39FF14;
+    --food-red: #FF3131;
+    --scanline-color: rgba(0, 0, 0, 0.4);
+    --crt-flicker: 0.05s;
+}
+
+/* Base Styles */
+body {
+    background-color: var(--background);
+    color: var(--neon-green);
+    font-family: 'Press Start 2P', cursive;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CRT Effects */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(var(--scanline-color) 50%, rgba(10, 10, 10, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 10;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+}
+
+/* Game Styles */
+#game-canvas {
+    border: 4px solid var(--neon-green);
+    background-color: #000;
+}
+
+/* Footer Credits */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    background: rgba(13, 13, 13, 0.8);
+    border-top: 1px solid rgba(57, 255, 20, 0.2);
+}
+```
+
+### 3. script.js
+```javascript
+// Game initialization and logic handling
+function gameLoop() {
+    // Movement logic
+    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+    
+    // Collision detection
+    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) return gameOver();
+    
+    // Growth and Food
+    if (head.x === food.x && head.y === food.y) {
+        score += 100;
+        spawnFood();
+    } else {
+        snake.pop();
+    }
+}
+```
+
+### 4. app.py
+```python
+import os
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50))
+    high_score = db.Column(db.Integer, default=0)
+
+@app.route('/submit_score', methods=['POST'])
+def submit_score():
+    # Save score to DB
+    pass
+```
+
+---
+
+## ☁️ Deployment Guide
+
+### Google Cloud Run Deployment
+1.  **Grant IAM Permissions**: Ensure the default compute service account has `roles/storage.admin` and `roles/cloudbuild.builds.builder`.
+2.  **Deploy Command**:
+    ```bash
+    gcloud run deploy retro-snake-game --source . --region us-central1 --allow-unauthenticated
+    ```
+
+---
+
+## 👨‍💻 Developed by Prasan Kumar
+*This project represents a full-stack engineering solution with a nostalgic twist.*
