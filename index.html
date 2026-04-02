@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python's World - Retro Snake Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="crt-overlay"></div>
+
+    <main id="app">
+        <!-- Phase 1: Landing Page -->
+        <section id="landing-page" class="screen active">
+            <div class="background-snakes" id="bg-snakes"></div>
+            <div class="content">
+                <h1 class="glitch" data-text="PYTHON'S WORLD">PYTHON'S WORLD</h1>
+                <p class="subtitle">A Journey Back to 1985</p>
+                <button id="enter-btn" class="retro-btn">ENTER PYTHON'S WORLD</button>
+            </div>
+        </section>
+
+        <!-- Phase 1: Profile Setup -->
+        <section id="profile-page" class="screen">
+            <div class="content">
+                <h2 class="title">WELCOME TO YOUR CHILDHOOD ERA</h2>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="first-name">FIRST NAME</label>
+                        <input type="text" id="first-name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">LAST NAME</label>
+                        <input type="text" id="last-name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">AGE</label>
+                        <input type="number" id="age" required min="1" max="120">
+                    </div>
+                    <button type="submit" id="start-game-btn" class="retro-btn">START NEW GAME</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Phase 2: Snake Game -->
+        <section id="game-page" class="screen">
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="stat">SCORE: <span id="current-score">0</span></div>
+                    <div class="stat">BEST: <span id="best-score">0</span></div>
+                </div>
+                <canvas id="game-canvas" width="400" height="400"></canvas>
+                <div id="game-controls" class="controls-hint">
+                    USE ARROW KEYS TO MOVE
+                </div>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="game-over" class="overlay hidden">
+                <h2 class="game-over-title">GAME OVER</h2>
+                <div class="final-stats">
+                    <p>TOTAL SCORE: <span id="final-score">0</span></p>
+                    <p>BEST SCORE: <span id="final-best">0</span></p>
+                </div>
+                <button id="restart-btn" class="retro-btn">TRY AGAIN</button>
+                <button id="leaderboard-btn" class="retro-btn secondary">LEADERBOARD</button>
+            </div>
+        </section>
+
+        <!-- Leaderboard (Bonus) -->
+        <section id="leaderboard-page" class="screen">
+            <div class="content">
+                <h2 class="title">LEADERBOARD</h2>
+                <div id="leaderboard-list">
+                    <!-- Loaded dynamically -->
+                </div>
+                <button id="back-to-home-btn" class="retro-btn">BACK</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
